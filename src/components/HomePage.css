@@ -1,0 +1,16 @@
+.homepage-container {
+    padding: 1rem;
+    background-color: #f4f9ff;
+    font-family: Arial, sans-serif;
+  }
+  
+  .homepage-container h2 {
+    color: #0077b6;
+    margin-bottom: 0.5rem;
+  }
+  
+  .homepage-container p {
+    color: gray;
+    font-size: 1rem;
+  }
+  
