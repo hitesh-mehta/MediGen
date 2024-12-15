@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import WelcomePage1 from "../images/WelcomePage.png"; // Import the image
 
 const WelcomePage = () => {
   const navigate = useNavigate();
@@ -15,14 +16,13 @@ const WelcomePage = () => {
         <p style={styles.subtitle}>
           Your partner in personalized health insights and cutting-edge 3D visualization.
         </p>
-        <img
-          src="/assets/health-illustration.png" // Replace with actual path
-          alt="Health Illustration"
-          style={styles.image}
-        />
+        
+        {/* Display the image with styles */}
+        <img src={WelcomePage1} alt="Welcome" style={styles.image} />
+
         <button style={styles.button} onClick={handleGetStarted}>
           Get Started
-        </button>
+        </button> 
       </div>
     </div>
   );
@@ -53,7 +53,8 @@ const styles = {
     marginBottom: '20px',
   },
   image: {
-    width: '100%',
+    width: '100%', // Adjust image size as needed
+    height: 'auto', // Maintain aspect ratio
     marginBottom: '20px',
   },
   button: {

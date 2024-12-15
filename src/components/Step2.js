@@ -7,7 +7,7 @@ const Step2 = ({ onNext }) => (
       Experience interactive organs and learn personalized visuals.
     </p>
     <img
-      src="/assets/3d-visualizations.png" // Replace with actual path
+      src="/images/3d_visualization.png"
       alt="3D Visualizations"
       style={styles.image}
     />

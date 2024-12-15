@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
+from typing import Optional
 import google.generativeai as genai
 from pyngrok import ngrok
 import uvicorn
@@ -24,35 +25,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Define the input schema to receive data
+# Define the inpuxt schema to receive data
 class PatientData(BaseModel):
-    Name: str
-    Age: int
-    Gender: str
-    Phone: str
-    Existing_Conditions: str
-    Allergies: str
-    Past_Surgeries: str
-    Ongoing_Diseases: str
-    Medications: str
-    Lab_Results: str
-    Medical_Imaging_Files: str
-    Consent: str
-
-    def __init__(self, **data):
-        super().__init__(**data)
-        self.Name = self.Name or None
-        self.Age = self.Age or None
-        self.Gender = self.Gender or None
-        self.Phone = self.Phone or None
-        self.Existing_Conditions = self.Existing_Conditions or None
-        self.Allergies = self.Allergies or None
-        self.Past_Surgeries = self.Past_Surgeries or None
-        self.Ongoing_Diseases = self.Ongoing_Diseases or None
-        self.Medications = self.Medications or None
-        self.Lab_Results = self.Lab_Results or None
-        self.Medical_Imaging_Files = self.Medical_Imaging_Files or None
-        self.Consent = self.Consent or None 
+    Name: Optional[str] = None
+    Age: Optional[int] = None
+    Gender: Optional[str] = None
+    Phone: Optional[str] = None
+    Existing_Conditions: Optional[str] = None
+    Allergies: Optional[str] = None
+    Past_Surgeries: Optional[str] = None
+    Ongoing_Diseases: Optional[str] = None
+    Medications: Optional[str] = None
+    Lab_Results: Optional[str] = None
+    Medical_Imaging_Files: Optional[str] = None
+    Consent: Optional[str] = None
 
 # Output schema for the response
 class MedicalReportResponse(BaseModel):
@@ -65,23 +51,28 @@ class MedicalReportResponse(BaseModel):
 @app.post("/generate_detailed_report/", response_model=MedicalReportResponse)
 async def generate_report(data: PatientData):
     try:
-        print("Received data:", data)  # Debugging: Print the received data
+        # Debugging: Print received data for inspection
+        print("Received data:", data)
+
+        # Ensure no required fields are missing (this may cause issues with missing fields)
+        if data.Name is None or data.Age is None or data.Gender is None:
+            raise HTTPException(status_code=400, detail="Missing required fields: Name, Age, Gender")
 
         # Format the prompt with patient information
         prompt = f"""
         Generate a detailed medical analysis report for the following patient:
 
-        **Name**: {data.Name}
-        **Age**: {data.Age}
-        **Gender**: {data.Gender}
-        **Phone**: {data.Phone}
-        **Existing Conditions**: {data.Existing_Conditions}
-        **Allergies**: {data.Allergies}
-        **Past Surgeries**: {data.Past_Surgeries}
-        **Ongoing Diseases**: {data.Ongoing_Diseases}
-        **Medications**: {data.Medications}
-        **Lab Results**: {data.Lab_Results}
-        **Medical Imaging Files**: {data.Medical_Imaging_Files}
+        **Name**: {data.Name if data.Name else 'Not Provided'}
+        **Age**: {data.Age if data.Age else 'Not Provided'}
+        **Gender**: {data.Gender if data.Gender else 'Not Provided'}
+        **Phone**: {data.Phone if data.Phone else 'Not Provided'}
+        **Existing Conditions**: {data.Existing_Conditions if data.Existing_Conditions else 'Not Provided'}
+        **Allergies**: {data.Allergies if data.Allergies else 'Not Provided'}
+        **Past Surgeries**: {data.Past_Surgeries if data.Past_Surgeries else 'Not Provided'}
+        **Ongoing Diseases**: {data.Ongoing_Diseases if data.Ongoing_Diseases else 'Not Provided'}
+        **Medications**: {data.Medications if data.Medications else 'Not Provided'}
+        **Lab Results**: {data.Lab_Results if data.Lab_Results else 'Not Provided'}
+        **Medical Imaging Files**: {data.Medical_Imaging_Files if data.Medical_Imaging_Files else 'Not Provided'}
 
         Analyze the above data and determine if the patient needs a transplant or replacement.
         If yes, determine the level of severity of the need: low, moderate, or high. If no transplant is required, state "null".
@@ -120,10 +111,6 @@ async def generate_report(data: PatientData):
             severity = "null"
             transplant_prompt = "null"
 
-        print("Generated report:", response.text)  # Debugging: Print the generated report
-        print("Transplant needed:", transplant_needed)  # Debugging: Print the transplant needed status
-        print("Severity:", severity)  # Debugging: Print the severity level
-        print("Transplant prompt:", transplant_prompt)  # Debugging: Print the transplant prompt
         return {
             "medical_report": response.text,
             "transplant_needed": transplant_needed,

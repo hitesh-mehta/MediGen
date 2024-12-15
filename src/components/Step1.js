@@ -5,7 +5,7 @@ const Step1 = ({ onNext }) => (
     <h2 style={styles.title}>AI Health Recommendations</h2>
     <p style={styles.description}>Get personalized health tips based on your data.</p>
     <img
-      src="/assets/health-recommendations.png" // Replace with actual path
+      src="/images/AIHealthRecomm.png"
       alt="AI Health Recommendations"
       style={styles.image}
     />

@@ -1,11 +1,11 @@
-// Frontend (React + Axios)
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
 
 const HealthDataInput = () => {
   const [formData, setFormData] = useState({
     name: "",
-    age: "",
+    age: 0,
     gender: "",
     phone: "",
     existingConditions: "",
@@ -14,12 +14,16 @@ const HealthDataInput = () => {
     ongoingDiseases: "",
     medications: "",
     labResults: "",
-    imagingFiles: null,
-    consent: false
+    imagingFiles: "", // Store only file path here
+    consent: "",
   });
 
   const [report, setReport] = useState("");
   const [error, setError] = useState("");
+  const [showSimulationButton, setShowSimulationButton] = useState(false); // New state to handle button visibility
+  const [transplantPrompt, setTransplantPrompt] = useState(""); // State to hold the transplant prompt for simulation
+
+  const navigate = useNavigate(); // Hook to handle routing
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,7 +31,10 @@ const HealthDataInput = () => {
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, imagingFiles: e.target.files });
+    const file = e.target.files[0]; // Only allow one file
+    if (file) {
+      setFormData({ ...formData, imagingFiles: file.path || file.name }); // Send only the path or name
+    }
   };
 
   const handleConsentChange = () => {
@@ -38,31 +45,53 @@ const HealthDataInput = () => {
     e.preventDefault();
     setError("");
     setReport("");
-  
+    setShowSimulationButton(false); // Reset the button to inactive when submitting
+
     try {
       const formDataToSend = new FormData();
-      Object.keys(formData).forEach((key) => {
-        if (key === "imagingFiles" && formData.imagingFiles) {
-          Array.from(formData.imagingFiles).forEach((file) => {
-            formDataToSend.append("imagingFiles", file);
-          });
-        } else {
-          formDataToSend.append(key, formData[key]);
-        }
+      
+      // Ensure all fields are added, with empty strings for non-required fields that are empty
+      const fields = {
+        name: formData.name,
+        age: formData.age,
+        gender: formData.gender,
+        phone: formData.phone,
+        existingConditions: formData.existingConditions || "",
+        allergies: formData.allergies || "",
+        pastSurgeries: formData.pastSurgeries || "",
+        ongoingDiseases: formData.ongoingDiseases || "",
+        medications: formData.medications || "",
+        labResults: formData.labResults || "",
+        imagingFiles: formData.imagingFiles, // Path of the file will be sent here
+        consent: formData.consent,
+      };
+
+      // Append each field to the FormData object
+      Object.keys(fields).forEach((key) => {
+        formDataToSend.append(key, fields[key]);
       });
-  
+
       const response = await axios.post("http://127.0.0.1:8000/generate_detailed_report/", formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      
       setReport(response.data.medical_report);
+      setTransplantPrompt(response.data.transplant_prompt); // Save the transplant prompt
+      setShowSimulationButton(response.data.transplant_needed); // Show button if transplant is needed
     } catch (err) {
       setError("Failed to generate the report. Please check your inputs and try again.");
       console.error(err);
     }
   };
-  
+
+  const handleShowSimulation = () => {
+    // Pass the transplantPrompt to the 3D simulation page
+    navigate("/3d-simulation", {
+      state: { transplantPrompt }, // Pass state to the 3D simulation component
+    });
+  };
 
   return (
     <div style={{ padding: "20px", maxWidth: "600px", margin: "auto", fontFamily: "Arial" }}>
@@ -79,7 +108,7 @@ const HealthDataInput = () => {
         <div>
           <label>Gender:</label>
           <select name="gender" value={formData.gender} onChange={handleChange} required>
-            <option value="">Select</option>
+            <option value="">Select Gender</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
             <option value="Other">Other</option>
@@ -87,75 +116,51 @@ const HealthDataInput = () => {
         </div>
         <div>
           <label>Phone:</label>
-          <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required />
+          <input type="text" name="phone" value={formData.phone} onChange={handleChange} required />
         </div>
         <div>
           <label>Existing Conditions:</label>
-          <input
-            type="text"
-            name="existingConditions"
-            value={formData.existingConditions}
-            onChange={handleChange}
-          />
+          <textarea name="existingConditions" value={formData.existingConditions} onChange={handleChange} />
         </div>
         <div>
           <label>Allergies:</label>
-          <input
-            type="text"
-            name="allergies"
-            value={formData.allergies}
-            onChange={handleChange}
-          />
+          <textarea name="allergies" value={formData.allergies} onChange={handleChange} />
         </div>
         <div>
           <label>Past Surgeries:</label>
-          <input
-            type="text"
-            name="pastSurgeries"
-            value={formData.pastSurgeries}
-            onChange={handleChange}
-          />
+          <textarea name="pastSurgeries" value={formData.pastSurgeries} onChange={handleChange} />
         </div>
         <div>
           <label>Ongoing Diseases:</label>
-          <input
-            type="text"
-            name="ongoingDiseases"
-            value={formData.ongoingDiseases}
-            onChange={handleChange}
-          />
+          <textarea name="ongoingDiseases" value={formData.ongoingDiseases} onChange={handleChange} />
         </div>
         <div>
           <label>Medications:</label>
-          <input
-            type="text"
-            name="medications"
-            value={formData.medications}
-            onChange={handleChange}
-          />
+          <textarea name="medications" value={formData.medications} onChange={handleChange} />
         </div>
         <div>
           <label>Lab Results:</label>
-          <input type="text" name="labResults" value={formData.labResults} onChange={handleChange} />
+          <textarea name="labResults" value={formData.labResults} onChange={handleChange} />
         </div>
         <div>
-          <label>Imaging Files:</label>
-          <input type="file" multiple onChange={handleFileChange} />
+          <label>Medical Imaging Files:</label>
+          <input type="file" name="imagingFiles" onChange={handleFileChange} />
         </div>
         <div>
-          <label>Consent:</label>
-          <input type="checkbox" checked={formData.consent} onChange={handleConsentChange} /> Yes
+          <label>
+            <input type="checkbox" checked={formData.consent} onChange={handleConsentChange} />
+            I consent to share my data for medical analysis
+          </label>
         </div>
         <button type="submit">Submit</button>
       </form>
-
-      {report && (
-        <div>
-          <h2>Generated Medical Report:</h2>
-          <pre>{report}</pre>
+      {error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
+      {report && <div style={{ marginTop: "20px" }}>{report}</div>}
+      {showSimulationButton && (
+        <div style={{ marginTop: "20px" }}>
+          <button onClick={handleShowSimulation}>Start 3D Simulation</button>
         </div>
       )}
-      {error && <div style={{ color: "red" }}>{error}</div>}
     </div>
   );
 };

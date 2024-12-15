@@ -5,7 +5,7 @@ const Step3 = ({ onComplete }) => (
     <h2 style={styles.title}>Seamless Interaction</h2>
     <p style={styles.description}>Chat with our intelligent assistant anytime.</p>
     <img
-      src="/assets/chatbot.png" // Replace with actual path
+      src="/images/SeamlessIntegration.png"
       alt="Seamless Interaction"
       style={styles.image}
     />
