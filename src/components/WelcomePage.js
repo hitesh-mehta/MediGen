@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import WelcomePage1 from "../images/WelcomePage.png"; // Import the image
+import WelcomePage1 from "../images/wp.png"; // Import the image
 
 const WelcomePage = () => {
   const navigate = useNavigate();
