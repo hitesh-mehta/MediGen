@@ -51,9 +51,6 @@ class MedicalReportResponse(BaseModel):
 @app.post("/generate_detailed_report/", response_model=MedicalReportResponse)
 async def generate_report(data: PatientData):
     try:
-        # Debugging: Print received data for inspection
-        print("Received data:", data)
-
         # Ensure no required fields are missing (this may cause issues with missing fields)
         if data.Name is None or data.Age is None or data.Gender is None:
             raise HTTPException(status_code=400, detail="Missing required fields: Name, Age, Gender")
@@ -83,29 +80,29 @@ async def generate_report(data: PatientData):
         - "Generate a 3D diagram of a functional lung".
 
         The variables you will return should be:
-        **transplant_needed**: True or False
-        **severity**: The severity level (low, moderate, high) or null
-        **transplant_prompt**: The 3D organ generation prompt, if applicable, else null
+**transplant_needed**: True or False
+**severity**: The severity level (low, moderate, high) or null
+Return the transplant prompt at the end of the response, and avoid using any quotation marks in the response.
         """
 
         # Generate the report using the Gemini API
         response = model.generate_content(prompt)
 
         # Parse AI response to extract transplant information and severity
-        if "transplant is needed" in response.text.lower():
+        if "transplant_needed: true" in response.text.lower() or "transplant_needed: yes" in response.text.lower() or "true" in response.text.lower():
             transplant_needed = True
             # Extract severity from response (this can be enhanced with more specific checks)
-            if "high severity" in response.text.lower():
+            if "severity: high" in response.text.lower() or "high" in response.text.lower():
                 severity = "high"
-            elif "moderate severity" in response.text.lower():
+            elif "severity: moderate" in response.text.lower() or "moderate" in response.text.lower():
                 severity = "moderate"
-            elif "low severity" in response.text.lower():
+            elif "severity: low" in response.text.lower() or "low" in response.text.lower():
                 severity = "low"
             else:
                 severity = "null"
 
             # Generate the transplant prompt for 3D model generation
-            transplant_prompt = "Generate a 3D diagram of a fully functional healthy organ suitable for transplant, such as a heart, kidney, or lung."
+            transplant_prompt = "generate "+response.text.lower().split("generate")[1].strip()
         else:
             transplant_needed = False
             severity = "null"

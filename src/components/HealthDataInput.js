@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate for routin
 const HealthDataInput = () => {
   const [formData, setFormData] = useState({
     name: "",
-    age: 0,
+    age: "",
     gender: "",
     phone: "",
     existingConditions: "",
@@ -14,8 +14,8 @@ const HealthDataInput = () => {
     ongoingDiseases: "",
     medications: "",
     labResults: "",
-    imagingFiles: "", // Store only file path here
-    consent: "",
+    imagingFiles: "", // Store file object, not the file path
+    consent: "" ,
   });
 
   const [report, setReport] = useState("");
@@ -33,7 +33,7 @@ const HealthDataInput = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0]; // Only allow one file
     if (file) {
-      setFormData({ ...formData, imagingFiles: file.path || file.name }); // Send only the path or name
+      setFormData({ ...formData, imagingFiles: file }); // Store the file directly
     }
   };
 
@@ -48,41 +48,39 @@ const HealthDataInput = () => {
     setShowSimulationButton(false); // Reset the button to inactive when submitting
 
     try {
-      const formDataToSend = new FormData();
-      
-      // Ensure all fields are added, with empty strings for non-required fields that are empty
+      console.log("Form Data Before anything:", formData);
+
+      // Ensure you're appending the fields correctly, including the file
       const fields = {
-        name: formData.name,
-        age: formData.age,
-        gender: formData.gender,
-        phone: formData.phone,
-        existingConditions: formData.existingConditions || "",
-        allergies: formData.allergies || "",
-        pastSurgeries: formData.pastSurgeries || "",
-        ongoingDiseases: formData.ongoingDiseases || "",
-        medications: formData.medications || "",
-        labResults: formData.labResults || "",
-        imagingFiles: formData.imagingFiles, // Path of the file will be sent here
-        consent: formData.consent,
+        Name: formData.name,
+        Age: formData.age,
+        Gender: formData.gender,
+        Phone: formData.phone,
+        Existing_Conditions: formData.existingConditions || "",
+        Allergies: formData.allergies || "",
+        Past_Surgeries: formData.pastSurgeries || "",
+        Ongoing_Diseases: formData.ongoingDiseases || "",
+        Medications: formData.medications || "",
+        Lab_Results: formData.labResults || "",
+        Medical_Imaging_Files: formData.imagingFiles ? formData.imagingFiles.name : "", // Send the file name only
+        Consent: formData.consent ? "Yes" : "No",
       };
 
-      // Append each field to the FormData object
-      Object.keys(fields).forEach((key) => {
-        formDataToSend.append(key, fields[key]);
-      });
-
-      const response = await axios.post("http://127.0.0.1:8000/generate_detailed_report/", formDataToSend, {
+      console.log("Form Data Before sending:", fields);
+      
+      const response = await axios.post("http://127.0.0.1:8000/generate_detailed_report/",fields, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json", // Ensure this is set correctly
         },
       });
-      
+
+      console.log("Response from the server:", response.data);
       setReport(response.data.medical_report);
       setTransplantPrompt(response.data.transplant_prompt); // Save the transplant prompt
       setShowSimulationButton(response.data.transplant_needed); // Show button if transplant is needed
     } catch (err) {
       setError("Failed to generate the report. Please check your inputs and try again.");
-      console.error(err);
+      console.error(err.response ? err.response.data : err.message); // Log full error for better debugging
     }
   };
 
