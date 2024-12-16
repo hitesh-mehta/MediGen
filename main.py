@@ -74,7 +74,7 @@ async def generate_report(data: PatientData):
         Analyze the above data and determine if the patient needs a transplant or replacement.
         If yes, determine the level of severity of the need: low, moderate, or high. If no transplant is required, state "null".
 
-        If a transplant is required, generate a prompt for another model that will create a 3D model of the healthy organ or tissue that needs to be replaced. The 3D model should be functional and detailed. For example: 
+        If a transplant is required, generate a prompt for another model that will create a 3D anatomical model of the healthy organ or tissue that needs to be replaced. The 3D model should be functional and detailed. For example: 
         - "Generate a 3D diagram of a fully functional healthy heart".
         - "Generate a 3D diagram of a healthy kidney suitable for transplant".
         - "Generate a 3D diagram of a functional lung".

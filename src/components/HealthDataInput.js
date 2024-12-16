@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
+import { useNavigate } from "react-router-dom";
 
 const HealthDataInput = () => {
   const [formData, setFormData] = useState({
@@ -14,16 +14,16 @@ const HealthDataInput = () => {
     ongoingDiseases: "",
     medications: "",
     labResults: "",
-    imagingFiles: "", // Store file object, not the file path
-    consent: "" ,
+    imagingFiles: "",
+    consent: false,
   });
 
   const [report, setReport] = useState("");
   const [error, setError] = useState("");
-  const [showSimulationButton, setShowSimulationButton] = useState(false); // New state to handle button visibility
-  const [transplantPrompt, setTransplantPrompt] = useState(""); // State to hold the transplant prompt for simulation
+  const [showSimulationButton, setShowSimulationButton] = useState(false);
+  const [transplantPrompt, setTransplantPrompt] = useState("");
 
-  const navigate = useNavigate(); // Hook to handle routing
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,9 +31,9 @@ const HealthDataInput = () => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0]; // Only allow one file
+    const file = e.target.files[0];
     if (file) {
-      setFormData({ ...formData, imagingFiles: file }); // Store the file directly
+      setFormData({ ...formData, imagingFiles: file });
     }
   };
 
@@ -45,119 +45,241 @@ const HealthDataInput = () => {
     e.preventDefault();
     setError("");
     setReport("");
-    setShowSimulationButton(false); // Reset the button to inactive when submitting
+    setShowSimulationButton(false);
 
     try {
-      console.log("Form Data Before anything:", formData);
-
-      // Ensure you're appending the fields correctly, including the file
       const fields = {
         Name: formData.name,
         Age: formData.age,
         Gender: formData.gender,
         Phone: formData.phone,
-        Existing_Conditions: formData.existingConditions || "",
-        Allergies: formData.allergies || "",
-        Past_Surgeries: formData.pastSurgeries || "",
-        Ongoing_Diseases: formData.ongoingDiseases || "",
-        Medications: formData.medications || "",
-        Lab_Results: formData.labResults || "",
-        Medical_Imaging_Files: formData.imagingFiles ? formData.imagingFiles.name : "", // Send the file name only
+        Existing_Conditions: formData.existingConditions,
+        Allergies: formData.allergies,
+        Past_Surgeries: formData.pastSurgeries,
+        Ongoing_Diseases: formData.ongoingDiseases,
+        Medications: formData.medications,
+        Lab_Results: formData.labResults,
+        Medical_Imaging_Files: formData.imagingFiles
+          ? formData.imagingFiles.name
+          : "",
         Consent: formData.consent ? "Yes" : "No",
       };
 
-      console.log("Form Data Before sending:", fields);
-      
-      const response = await axios.post("http://127.0.0.1:8000/generate_detailed_report/",fields, {
-        headers: {
-          "Content-Type": "application/json", // Ensure this is set correctly
-        },
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:8000/generate_detailed_report/",
+        fields,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      console.log("Response from the server:", response.data);
       setReport(response.data.medical_report);
-      setTransplantPrompt(response.data.transplant_prompt); // Save the transplant prompt
-      setShowSimulationButton(response.data.transplant_needed); // Show button if transplant is needed
+      setTransplantPrompt(response.data.transplant_prompt);
+      setShowSimulationButton(response.data.transplant_needed);
     } catch (err) {
-      setError("Failed to generate the report. Please check your inputs and try again.");
-      console.error(err.response ? err.response.data : err.message); // Log full error for better debugging
+      setError(
+        "Failed to generate the report. Please check your inputs and try again."
+      );
+      console.error(err.response ? err.response.data : err.message);
     }
   };
 
   const handleShowSimulation = () => {
-    // Pass the transplantPrompt to the 3D simulation page
     navigate("/3d-simulation", {
-      state: { transplantPrompt }, // Pass state to the 3D simulation component
+      state: { transplantPrompt },
     });
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "600px", margin: "auto", fontFamily: "Arial" }}>
-      <h1>Generate Medical Report</h1>
+    <div
+      style={{
+        padding: "20px",
+        maxWidth: "600px",
+        margin: "2rem auto",
+        backgroundColor: "#f9f9f9",
+        borderRadius: "10px",
+        boxShadow: "0 5px 15px rgba(0, 0, 0, 0.1)",
+        fontFamily: "Arial, sans-serif",
+        color: "#333",
+      }}
+    >
+      <h1 style={{ textAlign: "center", color: "#0056b3" }}>
+        Generate Medical Report
+      </h1>
       <form onSubmit={handleSubmit}>
+        {/** Name, Age, Phone */}
+        {["name", "age", "phone"].map((field) => (
+          <div key={field}>
+            <label style={{ display: "block", marginBottom: "0.5rem" }}>
+              {field.charAt(0).toUpperCase() + field.slice(1)}:
+            </label>
+            <input
+              type={field === "age" ? "number" : "text"}
+              name={field}
+              value={formData[field]}
+              onChange={handleChange}
+              required
+              style={{
+                width: "100%",
+                padding: "0.6rem",
+                marginBottom: "1rem",
+                borderRadius: "8px",
+                border: "1px solid #ccc",
+                fontSize: "1rem",
+              }}
+            />
+          </div>
+        ))}
+
+        {/** Gender Dropdown */}
         <div>
-          <label>Name:</label>
-          <input type="text" name="name" value={formData.name} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Age:</label>
-          <input type="number" name="age" value={formData.age} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Gender:</label>
-          <select name="gender" value={formData.gender} onChange={handleChange} required>
-            <option value="">Select Gender</option>
+          <label style={{ display: "block", marginBottom: "0.5rem" }}>
+            Gender:
+          </label>
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            required
+            style={{
+              width: "100%",
+              padding: "0.6rem",
+              marginBottom: "1rem",
+              borderRadius: "8px",
+              border: "1px solid #ccc",
+              fontSize: "1rem",
+              backgroundColor: "#fff",
+            }}
+          >
+            <option value="" disabled>
+              Select Gender
+            </option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
             <option value="Other">Other</option>
           </select>
         </div>
-        <div>
-          <label>Phone:</label>
-          <input type="text" name="phone" value={formData.phone} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Existing Conditions:</label>
-          <textarea name="existingConditions" value={formData.existingConditions} onChange={handleChange} />
-        </div>
-        <div>
-          <label>Allergies:</label>
-          <textarea name="allergies" value={formData.allergies} onChange={handleChange} />
-        </div>
-        <div>
-          <label>Past Surgeries:</label>
-          <textarea name="pastSurgeries" value={formData.pastSurgeries} onChange={handleChange} />
-        </div>
-        <div>
-          <label>Ongoing Diseases:</label>
-          <textarea name="ongoingDiseases" value={formData.ongoingDiseases} onChange={handleChange} />
-        </div>
-        <div>
-          <label>Medications:</label>
-          <textarea name="medications" value={formData.medications} onChange={handleChange} />
-        </div>
-        <div>
-          <label>Lab Results:</label>
-          <textarea name="labResults" value={formData.labResults} onChange={handleChange} />
-        </div>
-        <div>
-          <label>Medical Imaging Files:</label>
-          <input type="file" name="imagingFiles" onChange={handleFileChange} />
-        </div>
-        <div>
-          <label>
-            <input type="checkbox" checked={formData.consent} onChange={handleConsentChange} />
-            I consent to share my data for medical analysis
-          </label>
-        </div>
-        <button type="submit">Submit</button>
+
+        {/** Textarea Inputs */}
+        {[
+          "existingConditions",
+          "allergies",
+          "pastSurgeries",
+          "ongoingDiseases",
+          "medications",
+          "labResults",
+        ].map((field) => (
+          <div key={field}>
+            <label style={{ display: "block", marginBottom: "0.5rem" }}>
+              {field
+                .replace(/([A-Z])/g, " $1")
+                .trim()
+                .replace(/^./, (str) => str.toUpperCase())}
+              :
+            </label>
+            <textarea
+              name={field}
+              value={formData[field]}
+              onChange={handleChange}
+              style={{
+                width: "100%",
+                padding: "0.6rem",
+                marginBottom: "1rem",
+                borderRadius: "8px",
+                border: "1px solid #ccc",
+                fontSize: "1rem",
+                resize: "none",
+              }}
+            />
+          </div>
+        ))}
+
+        {/** File Input */}
+        <label style={{ display: "block", marginBottom: "0.5rem" }}>
+          Medical Imaging Files:
+        </label>
+        <input
+          type="file"
+          name="imagingFiles"
+          onChange={handleFileChange}
+          style={{
+            marginBottom: "1rem",
+          }}
+        />
+
+        {/** Consent Checkbox */}
+        <label>
+          <br></br>
+          <input
+            type="checkbox"
+            checked={formData.consent}
+            onChange={handleConsentChange}
+            style={{ marginRight: "0.5rem" }}
+          />
+          I consent to share my data for medical analysis
+        </label>
+
+        {/** Submit Button */}
+        <button
+          type="submit"
+          style={{
+            width: "100%",
+            padding: "0.8rem",
+            backgroundColor: "#0056b3",
+            color: "#ffffff",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "1rem",
+            marginTop: "1rem",
+          }}
+        >
+          Submit
+        </button>
       </form>
-      {error && <div style={{ color: "red", marginTop: "10px" }}>{error}</div>}
-      {report && <div style={{ marginTop: "20px" }}>{report}</div>}
-      {showSimulationButton && (
-        <div style={{ marginTop: "20px" }}>
-          <button onClick={handleShowSimulation}>Start 3D Simulation</button>
+
+      {/** Error Message */}
+      {error && (
+        <div style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>
+          {error}
         </div>
+      )}
+
+      {/** Report Section */}
+      {report && (
+        <div
+          style={{
+            marginTop: "1rem",
+            backgroundColor: "#e9f5ff",
+            padding: "1rem",
+            borderRadius: "8px",
+          }}
+        >
+          <h3>Medical Report:</h3>
+          <p>{report}</p>
+        </div>
+      )}
+
+      {/** Simulation Button */}
+      {showSimulationButton && (
+        <button
+          onClick={handleShowSimulation}
+          style={{
+            marginTop: "1rem",
+            width: "100%",
+            padding: "0.8rem",
+            backgroundColor: "#00a86b",
+            color: "#ffffff",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "1rem",
+          }}
+        >
+          Start 3D Simulation
+        </button>
       )}
     </div>
   );
