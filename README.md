@@ -51,7 +51,7 @@ Ensure the following tools and libraries are installed on your system:
 
 ### Clone the Repository:
 ```bash
-git clone https://github.com/AnushkaJainFirst/MediGenAI.git
+git clone [https://github.com/hitesh-mehta/MediGen](https://github.com/hitesh-mehta/MediGen/)
 cd MediGen
 ```
 ### Add your Gemini and Meshy API Keys 
