@@ -1,70 +1,127 @@
-# Getting Started with Create React App
+# MediGen: AI-Driven Regenerative Healthcare 🫀
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+MediGen is an AI-powered platform revolutionizing the healthcare landscape through cutting-edge technologies, including AI, 3D bioprinting, and regenerative therapies.
 
-## Available Scripts
+### Key Features:
+- 🧬 **Personalized Health Recommendations**: Tailored treatment plans based on patient data analysis.
+- 🖨️ **3D Bioprinting Simulations**: Visualizing tissue and organ regeneration in real time.
+- 💡 **Innovative Insights**: Addressing organ shortages while advancing precision medicine.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🚀 What We Offer:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- 📊 **Actionable Health Insights**: AI-powered analyses for better decision-making in medical care.
+- 🧠 **AI-Driven Regenerative Therapies**: Pioneering solutions for organ regeneration.
+- 🔗 **Seamless Integration of AI and Bioprinting**: Revolutionizing healthcare accessibility and innovation.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🌟 Features Overview:
+1. **AI-Powered Medical Reports**:
+   - Fast and accurate generation of detailed medical reports.
+   - Evaluation of transplant needs with severity analysis.
+   - Transplant-related 3D model suggestions for organ regeneration.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2. **User-Friendly Interface**:
+   - Interactive React-based frontend for seamless user experience.
+   - File upload support for medical imaging analysis.
 
-### `npm run build`
+3. **Integration with Google Gemini API**:
+   - Harnessing advanced AI capabilities to process patient data and generate actionable insights.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🛠️ Getting Started:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Prerequisites:
+Ensure the following tools and libraries are installed on your system:
+- **Node.js**: To run the React app.
+- **Python 3.9+**: For the FastAPI backend.
+- **Ngrok**: For public URL exposure.
+- **Packages**:
+  ```bash
+  pip install fastapi uvicorn pydantic google-generativeai pyngrok nest-asyncio
+  npm install
+  ```
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## ⚙️ Setup and Usage:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Clone the Repository:
+```bash
+git clone https://github.com/AnushkaJainFirst/MediGenAI.git
+cd MediGen
+```
+### Add your Gemini and Meshy API Keys 
+Replace the variables ```gemini_api_key``` and ```meshy_api_key``` with your respective keys within the local codebase.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Backend Setup:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1. Start the FastAPI backend:
+   ```bash
+   uvicorn main:app --reload
+   ```
+2. Note the **ngrok public URL** displayed in the terminal. Use this in the frontend API requests.
 
-## Learn More
+### Frontend Setup:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+2. Install dependencies and start the React app:
+   ```bash
+   npm install
+   npm start
+   ```
+3. Open [http://localhost:3000](http://localhost:3000) in your browser to access the frontend.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## 🧪 Example Input for Testing:
+```json
+{
+  "Name": "Varsha Mishra",
+  "Age": 32,
+  "Gender": "Female",
+  "Phone": "9876543210",
+  "Existing_Conditions": "Asthma, Arthritis",
+  "Allergies": "Dust, Penicillin",
+  "Past_Surgeries": "Knee Surgery (2018)",
+  "Ongoing_Diseases": "Chronic Fatigue Syndrome",
+  "Medications": "Paracetamol, Inhaler",
+  "Lab_Results": "Normal CBC, Elevated ESR",
+  "Medical_Imaging_Files": "XRay_Chest_2023.jpg",
+  "Consent": "Yes"
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+| Feature | Description |
+|---------|-------------|
+| **Medical Report Generation** | Users can input patient data and receive actionable medical insights. |
+| **3D Simulation Integration** | Offers a button for 3D transplant simulations based on AI recommendations. |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 📚 Documentation:
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [React](https://reactjs.org/)
+- [Google Gemini API](https://developers.google.com/)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## 🏗️ Future Enhancements:
+- Add advanced visualization features for 3D bioprinting.
+- Incorporate multi-language support for accessibility.
+- Enhance AI capabilities with real-time medical imaging analysis.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+Working Project Video Link : https://drive.google.com/file/d/1Sx8Yv9dvalBmSp4ibiNjdeqCxd8FFMla/view?usp=drive_link
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+Note : More Advancements to be done in the realistic 3D Model Generation. 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Contributors 🤝 are welcome! Please open an issue or submit a pull request.
+
